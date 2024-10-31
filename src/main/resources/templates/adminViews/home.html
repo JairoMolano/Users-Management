@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container-fluid d-flex flex-column flex-lg-row align-items-start justify-content-center min-vh-100">
+        <!-- Tarjeta de bienvenida -->
+        <div class="card shadow-lg text-center mb-4 mt-3" style="width: 100%; max-width: 400px;">
+            <div class="card-body p-4">
+                <h1 class="card-title" th:text="'Bienvenido, ' + ${#authentication.name}"></h1>
+                <p class="text-muted">¡Has ingresado como un administrador!</p>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-danger w-100 mt-4">Cerrar Sesión</button>
+                </form>
+                <a th:href="@{/home/admin/create-user}" class="btn btn-primary w-100 mt-2">Crear Usuario</a>
+            </div>
+        </div>
+
+        <!-- Separador entre tarjetas -->
+        <div class="mb-4" style="flex-grow: 0.4;"></div>
+
+        <!-- Tarjeta de tabla de usuarios -->
+        <div class="card shadow-lg mt-3" style="width: 100%; max-width: 800px;">
+            <div class="card-body">
+                <h2 class="text-center">Lista de Usuarios</h2>
+                <div class="table-responsive mt-3">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Fecha Nacimiento</th>
+                                <th>Código Postal</th>
+                                <th>Hora Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="users : ${users}">
+                                <td th:text="${users.id}"></td>
+                                <td th:text="${users.username}"></td>
+                                <td th:text="${users.email}"></td>
+                                <td th:text="${users.birthdate}"></td>
+                                <td th:text="${users.postalCode}"></td>
+                                <td th:text="${users.createdHour}"></td>
+                                <td>
+                                    <a th:href="@{/home/admin/edit-user/{id}(id=${users.id})}" class="btn btn-warning">Editar</a>
+                                    <a th:href="@{/home/admin/confirm-delete-user/{id}(id=${users.id})}" class="btn btn-danger">Eliminar</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
