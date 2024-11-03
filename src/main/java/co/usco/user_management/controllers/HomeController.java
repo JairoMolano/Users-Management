@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import co.usco.user_management.models.UserModel;
 import co.usco.user_management.services.UserService;
 
@@ -23,7 +24,11 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("email") String email, @RequestParam("postalCode") String postalCode, @RequestParam("birthdate") String birthdate) {
+    public String registerUser(@RequestParam("username") String username, 
+                              @RequestParam("password") String password, 
+                              @RequestParam("email") String email, 
+                              @RequestParam("postalCode") String postalCode, 
+                              @RequestParam("birthdate") String birthdate) {
             userService.createUser(username, password, email, postalCode, birthdate);
             return "/register";
     }
@@ -34,15 +39,19 @@ public class HomeController {
     }
 
     @GetMapping("/home/user")
-    public String homeUser(Model model, Authentication authentication) {
-        model.addAttribute("user", authentication.getUsername());  
+    public String homeUser(Model model) { 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserModel user = userService.getUserByUsername(username);
+        model.addAttribute("user", user);
         return "usersViews/home";
     }
 
 
     @GetMapping("/home/admin")
-    public String homeAdmin(Model model, Authentication authentication) {
-        model.addAttribute("user", authentication.getUsername());
+    public String homeAdmin(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserModel user = userService.getUserByUsername(username);
+        model.addAttribute("user", user);
         model.addAttribute("users", userService.getAllUsersExcludingAdmin());
         return "adminViews/home";
     }
@@ -53,7 +62,11 @@ public class HomeController {
     }
 
     @PostMapping("/home/admin/create-user")
-    public String createUser(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("email") String email, @RequestParam("postalCode") String postalCode, @RequestParam("birthdate") String birthdate) {
+    public String createUser(@RequestParam("username") String username, 
+                            @RequestParam("password") String password, 
+                            @RequestParam("email") String email, 
+                            @RequestParam("postalCode") String postalCode, 
+                            @RequestParam("birthdate") String birthdate) {
         userService.createUser(username, password, email, postalCode, birthdate);
         return "redirect:/home/admin";
     }
@@ -66,7 +79,11 @@ public class HomeController {
     }
 
     @PostMapping("/home/admin/edit-user/{id}")
-    public String updateUser(@PathVariable Long id, @RequestParam("username") String username, @RequestParam("email") String email, @RequestParam("postalCode") String postalCode, @RequestParam("birthdate") String birthdate) {
+    public String updateUser(@PathVariable Long id, 
+                            @RequestParam("username") String username, 
+                            @RequestParam("email") String email, 
+                            @RequestParam("postalCode") String postalCode, 
+                            @RequestParam("birthdate") String birthdate) {
         userService.updateUser(id, username, email, postalCode, birthdate);
         return "redirect:/home/admin";
     }

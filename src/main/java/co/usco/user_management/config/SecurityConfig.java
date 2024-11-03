@@ -22,8 +22,10 @@ public class SecurityConfig {
     // SECURITY FILTER CHAIN
     @Bean
     @SuppressWarnings("deprecation")
-       public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(auth -> auth 
+       public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
+        http
+        .authenticationProvider(authenticationProvider)
+        .authorizeRequests(auth -> auth 
                 .requestMatchers("/register").permitAll()      
                 .requestMatchers("/home/user").hasAnyAuthority("USER")
                 .requestMatchers("/home/admin").hasAnyAuthority("ADMIN")
@@ -65,12 +67,20 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
-            String username = authentication.getName();
-            if (username.equals("ADMIN")) {
-                response.sendRedirect("/home/admin");
-            } else {
-                response.sendRedirect("/home/user");
-            }
+            authentication.getAuthorities().forEach(authority -> {
+                try {
+                    switch (authority.getAuthority()) {
+                        case "USER":
+                            response.sendRedirect("/home/user");
+                            break;
+                        case "ADMIN":
+                            response.sendRedirect("/home/admin");
+                            break;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
         };
     }
 

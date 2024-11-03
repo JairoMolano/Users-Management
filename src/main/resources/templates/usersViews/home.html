@@ -10,8 +10,32 @@
     <div class="container d-flex align-items-center justify-content-center min-vh-100">
         <div class="card shadow-lg text-center" style="width: 100%; max-width: 400px;">
             <div class="card-body p-4">
-                <h1 class="card-title" th:text="'Bienvenido, ' + ${#authentication.name}"></h1>
+                <h1 class="card-title" th:text="'Bienvenido, ' + ${user.username}"></h1>
                 <p class="text-muted">¡Has ingresado como un usuario!</p>
+                <table class="table table-bordered mt-4">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Nombre de Usuario</th>
+                            <td th:text="${user.username}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Correo Electrónico</th>
+                            <td th:text="${user.email}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Fecha Nacimiento</th>
+                            <td th:text="${user.birthdate}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Codigo Postal</th>
+                            <td th:text="${user.postalCode}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Fecha de Registro</th>
+                            <td th:text="${user.createdHour}"></td>
+                        </tr>
+                    </tbody>
+                </table>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="btn btn-danger w-100 mt-4">Cerrar Sesión</button>
                 </form>
